@@ -1,11 +1,54 @@
 #include <iostream>
 #include <vector>
-#include <unordered_map>
+#include <unordered_set>
 #include <queue>
 
 using namespace std;
 
 
+int slidingPuzzle(const vector<vector<int>> &board) {
+    string target("123450");
+    string start("");
+
+    for (auto row : board) {
+        for (auto item : row) {
+            start += to_string(item);
+        }
+    }
+
+    unordered_set<string> visited;
+    // all the positions 0 can be swapped to
+    const vector<vector<int>> directions { { 1, 3 }, { 0, 2, 4 }, { 1, 5 }, { 0, 4 }, { 1, 3, 5 }, { 2, 4 } };
+
+    queue<string> queue;
+    queue.push(start);
+    visited.insert(start);
+    int res = 0;
+    while (!queue.empty()) {
+        // level count, has to use size control here, otherwise not needed
+        int size = queue.size();
+        for (int i = 0; i < size; i++) {
+            string cur = queue.front(); queue.pop();
+            if (cur == target) {
+                return res;
+            }
+            int zero = cur.find('0');
+            // swap if possible
+            for (int dir : directions[zero]) {
+                string next(cur);
+                swap(next[zero], next[dir]);
+                if (visited.count(next) == 0) {
+                    visited.insert(next);
+                    queue.push(next);
+                }
+            }
+        }
+        res++;
+    }
+    return -1;
+}
+
+/*
 int slidingPuzzle(const vector<vector<int>> &board) {
     unordered_map<int, vector<int>> path{{0, {1, 3}},
                                          {1, {0, 2, 4}},
@@ -14,12 +57,14 @@ int slidingPuzzle(const vector<vector<int>> &board) {
                                          {4, {1, 3, 5}},
                                          {5, {2, 4}}};
     unordered_map<string, int> cost;
-    string start = "";
-    for (auto row : board)
-        for (auto f : row)
-            start += to_string(f);
 
-    if (start == "123450") return 0;
+    // Init start string from the state of the board
+    string start = "";
+    for (auto row : board) {
+        for (auto f : row) {
+            start += to_string(f);
+        }
+    }
     cost[start] = 0;
 
     queue<pair<string, int>> pool;
@@ -41,7 +86,7 @@ int slidingPuzzle(const vector<vector<int>> &board) {
 
     return -1;
 }
-
+*/
 
 
 
